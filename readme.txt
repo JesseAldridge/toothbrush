@@ -1,12 +1,12 @@
 Installation
 ---
 
-Clone the repo:  git clone git@github.com:JesseAldridge/tartar.git
+Clone the repo:  git clone git@github.com:JesseAldridge/toothbrush.git
 
-Set DIR_PATH at the top of tartar.py to the directory that you will use to store your notes.
+Set DIR_PATH at the top of toothbrush.py to the directory that you will use to store your notes.
 
 Make a shortcut to run the file from somewhere in your path.  Something like this:
-`ln tartar.py /usr/local/bin/t`
+`ln toothbrush.py /usr/local/bin/t`
 
 Usage
 ---

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import sys, tty, termios, subprocess, os
 
-DIR_PATH = os.path.expanduser("~/Dropbox/tartar_notes")
+DIR_PATH = os.path.expanduser("~/Dropbox/toothbrush_notes")
 
 def getch():
   # Return a single character from stdin.
