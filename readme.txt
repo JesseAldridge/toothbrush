@@ -1,8 +1,12 @@
 Installation
 ---
 
-# Just make a shortcut to run the file from somewhere in your path, e.g.:
-ln tartar.py /usr/local/bin/t
+Clone the repo:  git clone git@github.com:JesseAldridge/tartar.git
+
+Set DIR_PATH at the top of tartar.py to the directory that you will use to store your notes.
+
+Make a shortcut to run the file from somewhere in your path.  Something like this:
+`ln tartar.py /usr/local/bin/t`
 
 Usage
 ---
