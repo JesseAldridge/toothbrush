@@ -28,6 +28,9 @@ def main_loop():
     elif ord(ch) == 127:  # backspace
       query_string = query_string[:-1]
     elif ord(ch) == 13:  # return
+      if notes.only_one_match():
+        notes.open_match(0)
+        break
       mode = ('command' if mode == 'search' else 'search')
     elif mode == 'command':
       should_break = True
@@ -74,6 +77,9 @@ class Notes:
       print '{}{}'.format(prefix, filename)
     if not self.matched_filenames:
       print '~ nothing found ~'
+
+  def only_one_match(self):
+    return len(self.matched_filenames) == 1
 
   def open_match(self, match_num):
     path = os.path.join(self.dir_path, self.matched_filenames[match_num])
