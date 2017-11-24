@@ -11,8 +11,11 @@ Usage
 t
 
 Just start typing to search your notes.
-When you find the one you're looking for, press enter to switch to select mode.
-From select mode you can enter 0-9 to open the corresponding file, or enter 'a' to open all matching files.
+When you're done searching, hit return to swith to COMMAND mode.
+From COMMAND mode you can enter any of the following commands:
+  0-9  open the corresponding file
+  a    open all matching files
+  n    create a new note matching the query
 
 License
 ---
