@@ -11,8 +11,8 @@ Make a shortcut to run the file from somewhere in your path.  Something like thi
 Usage
 ---
 
-# Run the script:
-t
+Run the script:
+`t`
 
 Just start typing to search your notes.
 When you're done searching, hit return to switch to COMMAND mode.
