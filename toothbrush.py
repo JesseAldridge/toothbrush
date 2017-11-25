@@ -21,6 +21,7 @@ def main_loop():
   notes = Notes()
   query_string = ''
   while True:
+    sys.stdout.flush()
     print '-- query: {} --'.format(query_string)
 
     ch = getch()
@@ -94,6 +95,8 @@ class Notes:
         score += 1
       if term in content:
         score += .5
+      if term not in basename and term not in content:
+        score -= 1
       score += self.basename_to_open_count.get(basename, 0) * .01
     return score
 
