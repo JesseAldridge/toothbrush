@@ -87,7 +87,7 @@ class Notes:
     self.open_path(path)
 
   def open_all(self):
-    for i in range(len(self.matched_filenames)):
+    for i in range(min(10, len(self.matched_filenames))):
       self.open_match(i)
 
   def open_path(self, path):
