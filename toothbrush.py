@@ -22,6 +22,11 @@ def main_loop():
   query_string = ''
   mode = 'search'
   while True:
+    print '-' * 10
+    print 'query: {}'.format(query_string)
+    print '-' * 10
+    print mode.upper()
+
     ch = getch()
     if ord(ch) == 3:  # ctrl+c
       raise KeyboardInterrupt
@@ -51,10 +56,6 @@ def main_loop():
     else:
       query_string += ch
     notes.search(query_string)
-    print '-' * 10
-    print query_string
-    print '-' * 10
-    print mode.upper()
 
 class Notes:
   def __init__(self):
