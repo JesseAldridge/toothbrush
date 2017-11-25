@@ -1,7 +1,7 @@
 #!/usr/bin/python
-import sys, tty, termios, subprocess, os, json
+import sys, tty, termios, subprocess, os, json, glob
 
-DIR_PATH = os.path.expanduser("~/Dropbox/toothbrush_notes")
+DIR_PATH = os.path.expanduser("~/Dropbox/tbrush_notes")
 
 def getch():
   # Return a single character from stdin.
@@ -20,12 +20,8 @@ def main_loop():
 
   notes = Notes()
   query_string = ''
-  mode = 'search'
   while True:
-    print '-' * 10
-    print 'query: {}'.format(query_string)
-    print '-' * 10
-    print mode.upper()
+    print '-- query: {} --'.format(query_string)
 
     ch = getch()
     if ord(ch) == 3:  # ctrl+c
@@ -33,9 +29,11 @@ def main_loop():
     elif ord(ch) == 127:  # backspace
       query_string = query_string[:-1]
     elif ord(ch) == 13:  # return
-      if len(notes.matched_filenames) == 0:
+      if len(notes.selected_basenames) == 0:
         notes.new_note(query_string)
-      notes.open_all()
+
+      for match_score, basename in notes.selected_basenames:
+        notes.open(basename)
       break
     else:
       query_string += ch
@@ -45,64 +43,76 @@ class Notes:
   def __init__(self):
     self.dir_path = os.path.expanduser(DIR_PATH)
     self.meta_path = os.path.expanduser('~/.toothbrush')
-    self.files = {}
-    for filename in os.listdir(self.dir_path):
-      file_path = os.path.join(self.dir_path, filename)
-      if os.path.isdir(file_path):
-        continue
+    self.basename_to_content = {}
+    glob_path = os.path.join(self.dir_path, '*.txt')
+    for file_path in glob.glob(glob_path):
+      filename = os.path.basename(file_path)
+      basename = os.path.splitext(filename)[0]
       with open(file_path) as f:
-        self.files[filename] = f.read()
+        self.basename_to_content[basename] = f.read()
 
-    self.filename_to_open_count = {}
+    self.basename_to_open_count = {}
     if os.path.exists(self.meta_path):
       with open(self.meta_path) as f:
         text = f.read()
       try:
-        self.filename_to_open_count = json.loads(text)
+        self.basename_to_open_count = json.loads(text)
       except Exception:
         pass
 
   def search(self, query_string):
-    self.matched_filenames = []
-
+    ranked_basenames = []
     terms = set(query_string.split())
-    for filename, content in self.files.iteritems():
-      for term in terms:
-        if term not in filename and term not in content:
+    for basename, content in self.basename_to_content.iteritems():
+      score = self.score(basename, content, terms)
+      ranked_basenames.append((score, basename))
+    ranked_basenames.sort(key=lambda t: -t[0])
+
+    self.selected_basenames = []
+    for i in range(0, min(len(ranked_basenames), 10)):
+      score, basename = ranked_basenames[i]
+      if i > 0:
+        prev_score, prev_basename = ranked_basenames[i - 1]
+        if score < prev_score * .5:
           break
-      else:
-        self.matched_filenames.append(filename)
+      self.selected_basenames.append((score, basename))
 
-    self.matched_filenames.sort(key=lambda filename: self.filename_to_open_count.get(filename, 0))
-
-    for i, filename in enumerate(self.matched_filenames[:10]):
-      prefix = '{}) '.format(i)
-      print '{}{}'.format(prefix, filename)
-
-    if not self.matched_filenames:
+    for score, basename in self.selected_basenames:
+        print '{:<80} ({})'.format(basename[:80], round(score, 2))
+    if not self.selected_basenames:
       print '~ nothing found ~'
 
-  def open_all(self):
-    for filename in self.matched_filenames[:10]:
-      path = os.path.join(self.dir_path, filename)
-      self.open_path(path)
+  def score(self, basename, content, query_terms):
+    basename_terms = set(basename.split())
 
-  def open_path(self, path):
-    print 'opening:', path
+    if basename_terms == query_terms:
+      return 10
 
-    filename = os.path.basename(path)
-    self.filename_to_open_count.setdefault(filename, 0)
-    self.filename_to_open_count[filename] += 1
+    score = 0
+    for term in query_terms:
+      if term in basename:
+        score += 1
+      if term in content:
+        score += .5
+      score += self.basename_to_open_count.get(basename, 0) * .01
+    return score
+
+  def open(self, basename):
+    print 'opening:', basename
+
+    path = os.path.join(self.dir_path, basename) + '.txt'
+    self.basename_to_open_count.setdefault(basename, 0)
+    self.basename_to_open_count[basename] += 1
     with open(self.meta_path, 'w') as f:
-      f.write(json.dumps(self.filename_to_open_count))
+      f.write(json.dumps(self.basename_to_open_count))
 
     os.system('open "{}"'.format(path))
 
   def new_note(self, query_string):
-    new_path = os.path.join(DIR_PATH, query_string)
+    new_path = os.path.join(DIR_PATH, query_string) + '.txt'
     with open(new_path, 'w') as f:
       f.write('')
-    self.open_path(new_path)
+    self.open(new_path)
 
 if __name__ == '__main__':
   main_loop()
