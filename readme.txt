@@ -15,11 +15,9 @@ Run the script:
 `t`
 
 Just start typing to search your notes.
-When you're done searching, hit return to switch to COMMAND mode.
-From COMMAND mode you can enter any of the following commands:
-  0-9  open the corresponding file
-  a    open all matching files
-  n    create a new note matching the query
+When you're done searching, hit return.
+This will either open the matching files or create a new file if there are no matches.
+
 
 License
 ---
