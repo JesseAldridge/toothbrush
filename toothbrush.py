@@ -33,9 +33,13 @@ def main_loop():
     elif ord(ch) == 127:  # backspace
       query_string = query_string[:-1]
     elif ord(ch) == 13:  # return
-      if notes.only_one_match():
+      if len(notes.matched_filenames) == 1:
         notes.open_match(0)
         break
+      elif len(notes.matched_filenames) == 0:
+        notes.new_note(query_string)
+        break
+
       mode = ('command' if mode == 'search' else 'search')
     elif mode == 'command':
       should_break = True
@@ -44,10 +48,7 @@ def main_loop():
       elif ch == 'a':
         notes.open_all()
       elif ch == 'n':
-        new_path = os.path.join(DIR_PATH, query_string)
-        with open(new_path, 'w') as f:
-          f.write('')
-        notes.open_path(new_path)
+        notes.new_note(query_string)
       else:
         should_break = False
 
@@ -70,17 +71,21 @@ class Notes:
 
   def search(self, query_string):
     self.matched_filenames = []
+
+    terms = set(query_string.split())
     for filename, content in self.files.iteritems():
-      if query_string in filename or query_string in content:
+      for term in terms:
+        if term not in filename and term not in content:
+          break
+      else:
         self.matched_filenames.append(filename)
+
     for i, filename in enumerate(self.matched_filenames[:10]):
       prefix = '{}) '.format(i)
       print '{}{}'.format(prefix, filename)
+
     if not self.matched_filenames:
       print '~ nothing found ~'
-
-  def only_one_match(self):
-    return len(self.matched_filenames) == 1
 
   def open_match(self, match_num):
     path = os.path.join(self.dir_path, self.matched_filenames[match_num])
@@ -93,6 +98,12 @@ class Notes:
   def open_path(self, path):
     print 'opening:', path
     os.system('open "{}"'.format(path))
+
+  def new_note(self, query_string):
+    new_path = os.path.join(DIR_PATH, query_string)
+    with open(new_path, 'w') as f:
+      f.write('')
+    notes.open_path(new_path)
 
 if __name__ == '__main__':
   main_loop()
