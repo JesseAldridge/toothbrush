@@ -33,27 +33,8 @@ def main_loop():
     elif ord(ch) == 127:  # backspace
       query_string = query_string[:-1]
     elif ord(ch) == 13:  # return
-      if len(notes.matched_filenames) == 1:
-        notes.open_match(0)
-        break
-      elif len(notes.matched_filenames) == 0:
-        notes.new_note(query_string)
-        break
-
-      mode = ('command' if mode == 'search' else 'search')
-    elif mode == 'command':
-      should_break = True
-      if ch.isdigit():
-        notes.open_match(int(ch))
-      elif ch == 'a':
-        notes.open_all()
-      elif ch == 'n':
-        notes.new_note(query_string)
-      else:
-        should_break = False
-
-      if should_break:
-        break
+      notes.open_all()
+      break
     else:
       query_string += ch
     notes.search(query_string)
@@ -87,13 +68,10 @@ class Notes:
     if not self.matched_filenames:
       print '~ nothing found ~'
 
-  def open_match(self, match_num):
-    path = os.path.join(self.dir_path, self.matched_filenames[match_num])
-    self.open_path(path)
-
   def open_all(self):
-    for i in range(min(10, len(self.matched_filenames))):
-      self.open_match(i)
+    for filename in self.matched_filenames[:10]:
+      path = os.path.join(self.dir_path, filename)
+      self.open_path(path)
 
   def open_path(self, path):
     print 'opening:', path
