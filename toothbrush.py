@@ -1,6 +1,8 @@
 #!/usr/bin/python
 import sys, tty, termios, subprocess, os, json, glob
 
+import clipboard
+
 DIR_PATH = os.path.expanduser("~/Dropbox/tbrush_notes")
 
 def getch():
@@ -31,6 +33,7 @@ def main_loop():
     elif ord(ch) == 13:  # return
       if len(notes.matched_basenames) == 0:
         notes.new_note(query_string)
+        clipboard(query_string)
       notes.open_all()
       break
     elif ord(ch) == 27:  # esc code
