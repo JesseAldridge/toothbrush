@@ -15,8 +15,8 @@ Run the script:
 `t`
 
 Just start typing to search your notes.
-When you're done searching, hit return.
-This will either open the matching files or create a new file if there are no matches.
+Press the up/down arrows to select a note.
+Hit return to either open the matching file or create a new file if there are no matches.
 
 
 License
