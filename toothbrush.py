@@ -34,7 +34,8 @@ def main_loop():
       if len(notes.matched_basenames) == 0:
         notes.new_note(query_string)
         clipboard.copy(query_string)
-      notes.open()
+      else:
+        notes.open_selected()
       break
     elif ord(ch) == 27:  # esc code
       ch = getch() # skip the [
@@ -100,7 +101,7 @@ class Notes:
     score += self.basename_to_open_count.get(basename, 0)
     return score
 
-  def open(self):
+  def open_selected(self):
     basename = self.matched_basenames[:10][self.selected_index]
     path = os.path.join(self.dir_path, basename) + '.txt'
     self.open_path(path)
