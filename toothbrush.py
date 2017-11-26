@@ -34,7 +34,7 @@ def main_loop():
       if len(notes.matched_basenames) == 0:
         notes.new_note(query_string)
         clipboard(query_string)
-      notes.open_all()
+      notes.open()
       break
     elif ord(ch) == 27:  # esc code
       ch = getch() # skip the [
@@ -69,6 +69,7 @@ class Notes:
 
   def search(self, query_string):
     self.matched_basenames = []
+    self.query_string = query_string
 
     terms = set(query_string.split())
     for basename, content in self.basename_to_content.iteritems():
@@ -78,7 +79,7 @@ class Notes:
       else:
         self.matched_basenames.append(basename)
 
-    self.matched_basenames.sort(key=lambda basename: self.basename_to_open_count.get(basename, 0))
+    self.matched_basenames.sort(key=self.score, reverse=True)
 
     for i, basename in enumerate(self.matched_basenames[:10]):
       print '{}{}'.format('> ' if i == self.selected_index else '  ', basename)
@@ -92,10 +93,17 @@ class Notes:
     if not self.matched_basenames:
       print '~ nothing found ~'
 
-  def open_all(self):
-    for basename in self.matched_basenames[:10]:
-      path = os.path.join(self.dir_path, basename) + '.txt'
-      self.open_path(path)
+  def score(self, basename):
+    score = 0
+    if self.query_string == basename:
+      score += 10
+    score += self.basename_to_open_count.get(basename, 0)
+    return score
+
+  def open(self):
+    basename = self.matched_basenames[:10][self.selected_index]
+    path = os.path.join(self.dir_path, basename) + '.txt'
+    self.open_path(path)
 
   def open_path(self, path):
     print 'opening:', path
