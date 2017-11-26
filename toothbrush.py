@@ -78,7 +78,7 @@ class Notes:
 
   def open_all(self):
     for basename in self.matched_basenames[:10]:
-      path = os.path.join(self.dir_path, basename)
+      path = os.path.join(self.dir_path, basename) + '.txt'
       self.open_path(path)
 
   def open_path(self, path):
