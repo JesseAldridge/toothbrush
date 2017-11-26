@@ -21,7 +21,7 @@ def main_loop():
   notes = Notes()
   query_string = ''
   while True:
-    print '-- query: {} --'.format(query_string)
+    print '\nquery: {}\n'.format(query_string)
 
     ch = getch()
     if ord(ch) == 3:  # ctrl+c
@@ -33,6 +33,11 @@ def main_loop():
         notes.new_note(query_string)
       notes.open_all()
       break
+    elif ord(ch) == 27:  # esc code
+      ch = getch() # skip the [
+      ch = getch()
+      if ord(ch) == 66 or ord(ch) == 65:
+        notes.adjust_selection(1 if ord(ch) == 66 else -1)
     else:
       query_string += ch
     notes.search(query_string)
@@ -41,7 +46,9 @@ class Notes:
   def __init__(self):
     self.dir_path = os.path.expanduser(DIR_PATH)
     self.meta_path = os.path.expanduser('~/.toothbrush')
+    self.selected_index = None
     self.basename_to_content = {}
+    self.matched_basenames = []
     glob_path = os.path.join(self.dir_path, '*.txt')
     for path in glob.glob(glob_path):
       basename = os.path.splitext(os.path.basename(path))[0]
@@ -70,8 +77,14 @@ class Notes:
 
     self.matched_basenames.sort(key=lambda basename: self.basename_to_open_count.get(basename, 0))
 
-    for basename in self.matched_basenames[:10]:
-      print basename
+    for i, basename in enumerate(self.matched_basenames[:10]):
+      print '{}{}'.format('> ' if i == self.selected_index else '  ', basename)
+      if i == self.selected_index:
+        full_text = self.basename_to_content[basename].strip()
+        preview_lines = [line for line in full_text.splitlines()[:10]] or ['~ empty ~']
+        indented_lines = ['     ' + line for line in preview_lines]
+        content_preview = '\n'.join(indented_lines)
+        print content_preview
 
     if not self.matched_basenames:
       print '~ nothing found ~'
@@ -97,6 +110,17 @@ class Notes:
     with open(new_path, 'w') as f:
       f.write('')
     self.open_path(new_path)
+
+  def adjust_selection(self, amount):
+    if not self.matched_basenames:
+      self.selected_index = None
+      return
+
+    if self.selected_index is None:
+      self.selected_index = 0
+    else:
+      self.selected_index += amount
+    self.selected_index %= min(len(self.matched_basenames), 10)
 
 if __name__ == '__main__':
   main_loop()
