@@ -102,7 +102,14 @@ class Notes:
     return score
 
   def open_selected(self):
-    basename = self.matched_basenames[:10][self.selected_index]
+    if self.selected_index is None:
+      for i in range(len(self.matched_basenames)):
+        self.open_index(i)
+      return
+    self.open_index(self.selected_index)
+
+  def open_index(self, index):
+    basename = self.matched_basenames[:10][index]
     path = os.path.join(self.dir_path, basename) + '.txt'
     self.open_path(path)
 
