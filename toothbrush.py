@@ -114,7 +114,8 @@ class Notes:
     self.open_path(path)
 
   def open_path(self, path):
-    print 'opening:', path
+    print 'opening:'
+    print '"{}"'.format(path)
 
     basename = os.path.basename(path)
     self.basename_to_open_count.setdefault(basename, 0)
