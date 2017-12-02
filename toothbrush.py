@@ -21,13 +21,24 @@ def main_loop():
   # Wait for a key, build up the query string.
 
   notes = Notes()
-  query_string = ''
+  query_string = ' '.join(sys.argv[1:])
+  query_path = os.path.expanduser('~/.toothbrush/saved_query.txt')
+  if not query_string.strip() and os.path.exists(query_path):
+    with open(query_path) as f:
+      query_string = f.read()
+
   while True:
     print '\nquery: {}\n'.format(query_string)
 
+    notes.search(query_string)
     ch = getch()
+
+    print 'ch: ', ord(ch)
+
     if ord(ch) == 3:  # ctrl+c
       raise KeyboardInterrupt
+    elif ord(ch) == 23:  # ctrl+w
+      query_string = query_string.rsplit(' ', 1)[0] if ' ' in query_string else ''
     elif ord(ch) == 127:  # backspace
       query_string = query_string[:-1]
     elif ord(ch) == 13:  # return
@@ -44,12 +55,16 @@ def main_loop():
         notes.adjust_selection(1 if ord(ch) == 66 else -1)
     else:
       query_string += ch
-    notes.search(query_string)
+
+    with open(query_path, 'w') as f:
+      f.write(query_string)
+
+
 
 class Notes:
   def __init__(self):
     self.dir_path = os.path.expanduser(DIR_PATH)
-    self.meta_path = os.path.expanduser('~/.toothbrush')
+    self.open_counts_path = os.path.expanduser('~/.toothbrush/open_counts.json')
     self.selected_index = None
     self.basename_to_content = {}
     self.matched_basenames = []
@@ -60,8 +75,8 @@ class Notes:
         self.basename_to_content[basename] = f.read()
 
     self.basename_to_open_count = {}
-    if os.path.exists(self.meta_path):
-      with open(self.meta_path) as f:
+    if os.path.exists(self.open_counts_path):
+      with open(self.open_counts_path) as f:
         text = f.read()
       try:
         self.basename_to_open_count = json.loads(text)
@@ -135,7 +150,7 @@ class Notes:
     basename = os.path.basename(path)
     self.basename_to_open_count.setdefault(basename, 0)
     self.basename_to_open_count[basename] += 1
-    with open(self.meta_path, 'w') as f:
+    with open(self.open_counts_path, 'w') as f:
       f.write(json.dumps(self.basename_to_open_count))
 
     os.system('open "{}"'.format(path))
