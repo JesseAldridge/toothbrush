@@ -61,8 +61,6 @@ def main_loop():
     with open(query_path, 'w') as f:
       f.write(query_string)
 
-
-
 class Notes:
   def __init__(self):
     self.dir_path = os.path.expanduser(DIR_PATH_NOTES)
@@ -105,13 +103,7 @@ class Notes:
       if i == self.selected_index:
         full_text = self.basename_to_content[basename].strip()
         lines = full_text.splitlines()
-        match_index = self.matching_line_index(terms, lines)
-        if match_index is None:
-          match_start, match_end = 0, 10
-        else:
-          match_start, match_end = match_index - 4, match_index + 4
-        context_lines = lines[match_start:match_end] or ['~ empty ~']
-        indented_lines = ['     ' + line for line in context_lines]
+        indented_lines = ['     ' + line for line in lines]
         content_preview = '\n'.join(indented_lines)
         print content_preview
 
@@ -119,12 +111,6 @@ class Notes:
       print '~ nothing found ~'
     elif len(self.matched_basenames) > num_matches_to_show:
       print '  ...'
-
-  def matching_line_index(self, query_terms, lines):
-    for match_index, line in enumerate(lines):
-      for term in query_terms:
-        if term in line:
-          return match_index
 
   def score(self, basename):
     score = 0
