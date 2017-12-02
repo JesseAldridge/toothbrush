@@ -81,8 +81,9 @@ class Notes:
         self.matched_basenames.append(basename)
 
     self.matched_basenames.sort(key=self.score, reverse=True)
+    num_matches_to_show = 10
 
-    for i, basename in enumerate(self.matched_basenames[:10]):
+    for i, basename in enumerate(self.matched_basenames[:num_matches_to_show]):
       print '{}{}'.format('> ' if i == self.selected_index else '  ', basename)
       if i == self.selected_index:
         full_text = self.basename_to_content[basename].strip()
@@ -99,6 +100,8 @@ class Notes:
 
     if not self.matched_basenames:
       print '~ nothing found ~'
+    elif len(self.matched_basenames) > num_matches_to_show:
+      print '  ...'
 
   def matching_line_index(self, query_terms, lines):
     for match_index, line in enumerate(lines):
