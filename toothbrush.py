@@ -31,6 +31,7 @@ def main_loop():
     with open(query_path) as f:
       query_string = f.read()
 
+  first_char_typed = False
   while True:
     print '\nquery: {}\n'.format(query_string)
 
@@ -56,6 +57,9 @@ def main_loop():
       if ord(ch) == 66 or ord(ch) == 65: # up/down arrows
         notes.adjust_selection(1 if ord(ch) == 66 else -1)
     else:
+      if not first_char_typed:
+        query_string = ''
+        first_char_typed = True
       query_string += ch
 
     with open(query_path, 'w') as f:
