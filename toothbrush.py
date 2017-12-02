@@ -86,13 +86,25 @@ class Notes:
       print '{}{}'.format('> ' if i == self.selected_index else '  ', basename)
       if i == self.selected_index:
         full_text = self.basename_to_content[basename].strip()
-        preview_lines = [line for line in full_text.splitlines()[:10]] or ['~ empty ~']
-        indented_lines = ['     ' + line for line in preview_lines]
+        lines = full_text.splitlines()
+        match_index = self.matching_line_index(terms, lines)
+        if match_index is None:
+          match_start, match_end = 0, 10
+        else:
+          match_start, match_end = match_index - 4, match_index + 4
+        context_lines = lines[match_start:match_end] or ['~ empty ~']
+        indented_lines = ['     ' + line for line in context_lines]
         content_preview = '\n'.join(indented_lines)
         print content_preview
 
     if not self.matched_basenames:
       print '~ nothing found ~'
+
+  def matching_line_index(self, query_terms, lines):
+    for match_index, line in enumerate(lines):
+      for term in query_terms:
+        if term in line:
+          return match_index
 
   def score(self, basename):
     score = 0
