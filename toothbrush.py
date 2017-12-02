@@ -3,7 +3,8 @@ import sys, tty, termios, subprocess, os, json, glob
 
 import clipboard
 
-DIR_PATH = os.path.expanduser("~/Dropbox/tbrush_notes")
+DIR_PATH_NOTES = os.path.expanduser("~/Dropbox/tbrush_notes")
+DIR_PATH_META = os.path.expanduser('~/.toothbrush_meta')
 
 def getch():
   # Return a single character from stdin.
@@ -20,9 +21,12 @@ def getch():
 def main_loop():
   # Wait for a key, build up the query string.
 
+  if not os.path.exists(DIR_PATH_META):
+    os.mkdir(DIR_PATH_META)
+
   notes = Notes()
   query_string = ' '.join(sys.argv[1:])
-  query_path = os.path.expanduser('~/.toothbrush/saved_query.txt')
+  query_path = os.path.join(DIR_PATH_META, 'saved_query.txt')
   if not query_string.strip() and os.path.exists(query_path):
     with open(query_path) as f:
       query_string = f.read()
@@ -32,8 +36,6 @@ def main_loop():
 
     notes.search(query_string)
     ch = getch()
-
-    print 'ch: ', ord(ch)
 
     if ord(ch) == 3:  # ctrl+c
       raise KeyboardInterrupt
@@ -51,7 +53,7 @@ def main_loop():
     elif ord(ch) == 27:  # esc code
       ch = getch() # skip the [
       ch = getch()
-      if ord(ch) == 66 or ord(ch) == 65:
+      if ord(ch) == 66 or ord(ch) == 65: # up/down arrows
         notes.adjust_selection(1 if ord(ch) == 66 else -1)
     else:
       query_string += ch
@@ -63,8 +65,8 @@ def main_loop():
 
 class Notes:
   def __init__(self):
-    self.dir_path = os.path.expanduser(DIR_PATH)
-    self.open_counts_path = os.path.expanduser('~/.toothbrush/open_counts.json')
+    self.dir_path = os.path.expanduser(DIR_PATH_NOTES)
+    self.open_counts_path = os.path.join(DIR_PATH_META, 'open_counts.json')
     self.selected_index = None
     self.basename_to_content = {}
     self.matched_basenames = []
@@ -156,7 +158,7 @@ class Notes:
     os.system('open "{}"'.format(path))
 
   def new_note(self, query_string):
-    new_path = os.path.join(DIR_PATH, query_string) + '.txt'
+    new_path = os.path.join(DIR_PATH_NOTES, query_string) + '.txt'
     with open(new_path, 'w') as f:
       f.write('')
     self.open_path(new_path)
