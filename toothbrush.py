@@ -71,12 +71,14 @@ class Notes:
     self.open_counts_path = os.path.join(DIR_PATH_META, 'open_counts.json')
     self.selected_index = None
     self.basename_to_content = {}
+    self.basename_to_content_lower = {}
     self.matched_basenames = []
     glob_path = os.path.join(self.dir_path, '*.txt')
     for path in glob.glob(glob_path):
       basename = os.path.splitext(os.path.basename(path))[0]
       with open(path) as f:
         self.basename_to_content[basename] = f.read()
+      self.basename_to_content_lower[basename] = self.basename_to_content[basename].lower()
 
     self.basename_to_open_count = {}
     if os.path.exists(self.open_counts_path):
@@ -91,8 +93,8 @@ class Notes:
     self.matched_basenames = []
     self.query_string = query_string
 
-    terms = set(query_string.split())
-    for basename, content in self.basename_to_content.iteritems():
+    terms = set(query_string.lower().split())
+    for basename, content in self.basename_to_content_lower.iteritems():
       for term in terms:
         if term not in basename and term not in content:
           break
