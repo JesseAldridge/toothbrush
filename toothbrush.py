@@ -108,6 +108,7 @@ class Notes:
       print '{}{}'.format('> ' if i == self.selected_index else '  ', basename)
       if i == self.selected_index:
         full_text = self.basename_to_content[basename].strip()
+        clipboard.copy(full_text)
         lines = full_text.splitlines()
         indented_lines = ['     ' + line for line in lines]
         content_preview = '\n'.join(indented_lines)
