@@ -40,6 +40,8 @@ def main_loop():
 
     if ord(ch) == 3:  # ctrl+c
       raise KeyboardInterrupt
+    elif ord(ch) == 14:  # ctrl+n
+      notes.new_note(query_string)
     elif ord(ch) == 23:  # ctrl+w
       query_string = query_string.rsplit(' ', 1)[0] if ' ' in query_string else ''
     elif ord(ch) == 127:  # backspace
