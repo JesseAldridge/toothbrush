@@ -1,8 +1,6 @@
 #!/usr/bin/python
 import sys, tty, termios, subprocess, os, json, glob
 
-import clipboard
-
 DIR_PATH_NOTES = os.path.expanduser("~/Dropbox/tbrush_notes")
 DIR_PATH_META = os.path.expanduser('~/.toothbrush_meta')
 
@@ -49,7 +47,6 @@ def main_loop():
     elif ord(ch) == 13:  # return
       if len(notes.matched_basenames) == 0:
         notes.new_note(query_string)
-        clipboard.copy(query_string)
       else:
         notes.open_selected()
       break
