@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import sys, tty, termios, subprocess, os, json, glob, time
+import sys, tty, termios, subprocess, os, json, glob, time, re
 
 DIR_PATH_NOTES = os.path.expanduser("~/Dropbox/tbrush_notes")
 DIR_PATH_META = os.path.expanduser('~/.toothbrush_meta')
@@ -30,7 +30,6 @@ def main_loop():
     with open(query_path) as f:
       query_string = f.read()
   load_times_path = os.path.join(DIR_PATH_META, 'load_times.txt')
-  print 'load_times_path:', load_times_path
   with open(load_times_path, 'a') as f:
     f.write('{}\n'.format(time.time() - start_time))
 
@@ -130,7 +129,7 @@ class Notes:
   def open_path(self, path):
     print 'opening:'
     print '"{}"'.format(path)
-    os.system('open "{}"'.format(path))
+    subprocess.call(['open', path])
 
   def new_note(self, query_string):
     new_path = os.path.join(DIR_PATH_NOTES, query_string) + '.txt'
