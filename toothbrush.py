@@ -1,6 +1,8 @@
 #!/usr/bin/python
 import sys, tty, termios, subprocess, os, json, glob, time, re
 
+import clipboard
+
 DIR_PATH_NOTES = os.path.expanduser("~/Dropbox/tbrush_notes")
 DIR_PATH_META = os.path.expanduser('~/.toothbrush_meta')
 
@@ -40,7 +42,14 @@ def main_loop():
     notes.search(query_string)
     ch = getch()
 
-    if ord(ch) == 3:  # ctrl+c
+    # print 'ord(ch):', ord(ch)
+
+    if ord(ch) == 1:  # ctrl+a
+      if notes.selected_index is not None:
+        basename = notes.matched_basenames[notes.selected_index]
+        content = notes.basename_to_content[basename]
+        clipboard.copy(content)
+    elif ord(ch) == 3:  # ctrl+c
       raise KeyboardInterrupt
     elif ord(ch) == 14:  # ctrl+n
       notes.new_note(query_string)
@@ -122,7 +131,7 @@ class Notes:
     self.open_index(self.selected_index)
 
   def open_index(self, index):
-    basename = self.matched_basenames[:10][index]
+    basename = self.matched_basenames[index]
     path = os.path.join(self.dir_path, basename) + '.txt'
     self.open_path(path)
 
