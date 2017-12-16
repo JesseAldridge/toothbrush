@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import sys, tty, termios, subprocess, os, json, glob
+import sys, tty, termios, subprocess, os, json, glob, time
 
 DIR_PATH_NOTES = os.path.expanduser("~/Dropbox/tbrush_notes")
 DIR_PATH_META = os.path.expanduser('~/.toothbrush_meta')
@@ -22,12 +22,17 @@ def main_loop():
   if not os.path.exists(DIR_PATH_META):
     os.mkdir(DIR_PATH_META)
 
+  start_time = time.time()
   notes = Notes()
   query_string = ' '.join(sys.argv[1:])
   query_path = os.path.join(DIR_PATH_META, 'saved_query.txt')
   if not query_string.strip() and os.path.exists(query_path):
     with open(query_path) as f:
       query_string = f.read()
+  load_times_path = os.path.join(DIR_PATH_META, 'load_times.txt')
+  print 'load_times_path:', load_times_path
+  with open(load_times_path, 'a') as f:
+    f.write('{}\n'.format(time.time() - start_time))
 
   first_char_typed = False
   while True:
@@ -67,7 +72,6 @@ def main_loop():
 class Notes:
   def __init__(self):
     self.dir_path = os.path.expanduser(DIR_PATH_NOTES)
-    self.open_counts_path = os.path.join(DIR_PATH_META, 'open_counts.json')
     self.selected_index = None
     self.basename_to_content = {}
     self.basename_to_content_lower = {}
@@ -78,15 +82,6 @@ class Notes:
       with open(path) as f:
         self.basename_to_content[basename] = f.read()
       self.basename_to_content_lower[basename] = self.basename_to_content[basename].lower()
-
-    self.basename_to_open_count = {}
-    if os.path.exists(self.open_counts_path):
-      with open(self.open_counts_path) as f:
-        text = f.read()
-      try:
-        self.basename_to_open_count = json.loads(text)
-      except Exception:
-        pass
 
   def search(self, query_string):
     self.matched_basenames = []
@@ -118,11 +113,7 @@ class Notes:
       print '  ...'
 
   def score(self, basename):
-    score = 0
-    if self.query_string == basename:
-      score += 10
-    score += self.basename_to_open_count.get(basename, 0)
-    return score
+    return 10 if self.query_string == basename else 0
 
   def open_selected(self):
     if self.selected_index is None:
@@ -139,13 +130,6 @@ class Notes:
   def open_path(self, path):
     print 'opening:'
     print '"{}"'.format(path)
-
-    basename = os.path.basename(path)
-    self.basename_to_open_count.setdefault(basename, 0)
-    self.basename_to_open_count[basename] += 1
-    with open(self.open_counts_path, 'w') as f:
-      f.write(json.dumps(self.basename_to_open_count))
-
     os.system('open "{}"'.format(path))
 
   def new_note(self, query_string):
