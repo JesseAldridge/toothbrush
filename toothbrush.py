@@ -60,8 +60,8 @@ def main_loop():
     elif ord(ch) == 13:  # return
       if len(notes.matched_basenames) == 0:
         notes.new_note(query_string)
-      else:
-        notes.open_selected()
+      elif notes.selected_index is not None:
+        notes.open_index(notes.selected_index)
       break
     elif ord(ch) == 27:  # esc code
       ch = getch() # skip the [
@@ -122,13 +122,6 @@ class Notes:
 
   def score(self, basename):
     return 10 if self.query_string == basename else 0
-
-  def open_selected(self):
-    if self.selected_index is None:
-      for i in range(len(self.matched_basenames)):
-        self.open_index(i)
-      return
-    self.open_index(self.selected_index)
 
   def open_index(self, index):
     basename = self.matched_basenames[index]
