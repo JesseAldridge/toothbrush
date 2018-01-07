@@ -19,21 +19,26 @@ def getch():
   return ch
 
 def main_loop():
-  # Wait for a key, build up the query string.
+  # Load notes, saved_query, and log loading time.
 
   if not os.path.exists(DIR_PATH_META):
     os.mkdir(DIR_PATH_META)
 
   start_time = time.time()
+
   notes = Notes()
+
   query_string = ' '.join(sys.argv[1:])
   query_path = os.path.join(DIR_PATH_META, 'saved_query.txt')
   if not query_string.strip() and os.path.exists(query_path):
     with open(query_path) as f:
       query_string = f.read()
+
   load_times_path = os.path.join(DIR_PATH_META, 'load_times.txt')
   with open(load_times_path, 'a') as f:
     f.write('{}\n'.format(time.time() - start_time))
+
+  # Wait for a key, build up the query string.
 
   first_char_typed = False
   while True:
@@ -44,12 +49,7 @@ def main_loop():
 
     # print 'ord(ch):', ord(ch)
 
-    if ord(ch) == 1:  # ctrl+a
-      if notes.selected_index is not None:
-        basename = notes.matched_basenames[notes.selected_index]
-        content = notes.basename_to_content[basename]
-        clipboard.copy(content)
-    elif ord(ch) == 3:  # ctrl+c
+    if ord(ch) == 3:  # ctrl+c
       raise KeyboardInterrupt
     elif ord(ch) == 14:  # ctrl+n
       notes.new_note(query_string)
@@ -58,9 +58,9 @@ def main_loop():
     elif ord(ch) == 127:  # backspace
       query_string = query_string[:-1]
     elif ord(ch) == 13:  # return
-      if len(notes.matched_basenames) == 0:
+      if notes.selected_index is None:
         notes.new_note(query_string)
-      elif notes.selected_index is not None:
+      else:
         notes.open_index(notes.selected_index)
       break
     elif ord(ch) == 27:  # esc code
