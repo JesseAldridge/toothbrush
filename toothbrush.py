@@ -1,8 +1,6 @@
 #!/usr/bin/python
 import sys, tty, termios, subprocess, os, json, glob, time, re
 
-import clipboard
-
 DIR_PATH_NOTES = os.path.expanduser("~/Dropbox/tbrush_notes")
 DIR_PATH_META = os.path.expanduser('~/.toothbrush_meta')
 
