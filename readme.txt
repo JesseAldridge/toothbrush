@@ -21,7 +21,6 @@ Just start typing to search your notes.
 Press the up/down arrows to select a note.
 Hit return to either open the matching file or create a new file if there are no matches.
 
-ctrl+a to copy the content of the selected note to the clipboard
 ctrl+n to create a new note from the current query
 
 License
