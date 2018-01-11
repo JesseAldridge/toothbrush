@@ -56,7 +56,7 @@ def main_loop():
     elif ord(ch) == 127:  # backspace
       query_string = query_string[:-1]
     elif ord(ch) == 13:  # return
-      if notes.selected_index is None:
+      if notes.selected_index is None or notes.selected_index >= len(notes.matched_basenames):
         notes.new_note(query_string)
       else:
         notes.open_index(notes.selected_index)
