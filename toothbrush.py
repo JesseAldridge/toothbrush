@@ -77,7 +77,7 @@ class Notes:
     self.basename_to_content_lower = {}
     self.matched_basenames = []
 
-    def load_stuff():
+    def load_notes():
       glob_path = os.path.join(self.dir_path, '*.txt')
       for path in glob.glob(glob_path):
         basename = os.path.splitext(os.path.basename(path))[0]
@@ -85,7 +85,7 @@ class Notes:
           self.basename_to_content[basename] = f.read()
         self.basename_to_content_lower[basename] = self.basename_to_content[basename].lower()
 
-    t = threading.Thread(target=load_stuff, args=[], kwargs={})
+    t = threading.Thread(target=load_notes, args=[], kwargs={})
     t.start()
 
   def search(self, query_string):
