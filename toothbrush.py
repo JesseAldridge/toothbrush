@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import sys, tty, termios, subprocess, os, json, glob, time, re
+import sys, tty, termios, subprocess, os, json, glob, time, re, threading
 
 DIR_PATH_NOTES = os.path.expanduser("~/Dropbox/tbrush_notes")
 DIR_PATH_META = os.path.expanduser('~/.toothbrush_meta')
@@ -22,8 +22,6 @@ def main_loop():
   if not os.path.exists(DIR_PATH_META):
     os.mkdir(DIR_PATH_META)
 
-  start_time = time.time()
-
   notes = Notes()
 
   query_string = ' '.join(sys.argv[1:])
@@ -31,10 +29,6 @@ def main_loop():
   if not query_string.strip() and os.path.exists(query_path):
     with open(query_path) as f:
       query_string = f.read()
-
-  load_times_path = os.path.join(DIR_PATH_META, 'load_times.txt')
-  with open(load_times_path, 'a') as f:
-    f.write('{}\n'.format(time.time() - start_time))
 
   # Wait for a key, build up the query string.
 
@@ -82,12 +76,17 @@ class Notes:
     self.basename_to_content = {}
     self.basename_to_content_lower = {}
     self.matched_basenames = []
-    glob_path = os.path.join(self.dir_path, '*.txt')
-    for path in glob.glob(glob_path):
-      basename = os.path.splitext(os.path.basename(path))[0]
-      with open(path) as f:
-        self.basename_to_content[basename] = f.read()
-      self.basename_to_content_lower[basename] = self.basename_to_content[basename].lower()
+
+    def load_stuff():
+      glob_path = os.path.join(self.dir_path, '*.txt')
+      for path in glob.glob(glob_path):
+        basename = os.path.splitext(os.path.basename(path))[0]
+        with open(path) as f:
+          self.basename_to_content[basename] = f.read()
+        self.basename_to_content_lower[basename] = self.basename_to_content[basename].lower()
+
+    t = threading.Thread(target=load_stuff, args=[], kwargs={})
+    t.run()
 
   def search(self, query_string):
     self.matched_basenames = []
