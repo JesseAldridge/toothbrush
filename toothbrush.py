@@ -86,7 +86,7 @@ class Notes:
         self.basename_to_content_lower[basename] = self.basename_to_content[basename].lower()
 
     t = threading.Thread(target=load_stuff, args=[], kwargs={})
-    t.run()
+    t.start()
 
   def search(self, query_string):
     self.matched_basenames = []
