@@ -93,7 +93,8 @@ class Notes:
     self.query_string = query_string
 
     terms = set(query_string.lower().split())
-    for basename, content in self.basename_to_content_lower.iteritems():
+    for basename in self.basename_to_content_lower.keys():
+      content = self.basename_to_content_lower[basename]
       for term in terms:
         if term not in basename and term not in content:
           break
