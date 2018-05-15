@@ -32,9 +32,9 @@ def main_loop():
 
   # Wait for a key, build up the query string.
 
-  first_char_typed = False
+  is_first_key = True
   while True:
-    print '\nquery: {}\n'.format(query_string)
+    print '\nquery: [{}]\n'.format(query_string)
 
     notes.search(query_string)
     ch = getch()
@@ -46,7 +46,8 @@ def main_loop():
     elif ord(ch) == 14:  # ctrl+n
       notes.new_note(query_string)
     elif ord(ch) == 23:  # ctrl+w
-      query_string = (query_string.rsplit(' ', 1)[0] + ' ') if ' ' in query_string else '')
+      stripped = query_string.strip()
+      query_string = (stripped.rsplit(' ', 1)[0] + ' ') if ' ' in stripped else ''
     elif ord(ch) == 127:  # backspace
       query_string = query_string[:-1]
     elif ord(ch) == 13:  # return
@@ -61,10 +62,11 @@ def main_loop():
       if ord(ch) == 66 or ord(ch) == 65: # up/down arrows
         notes.adjust_selection(1 if ord(ch) == 66 else -1)
     else:
-      if not first_char_typed:
+      if is_first_key:
         query_string = ''
-        first_char_typed = True
       query_string += ch
+
+    is_first_key = False
 
     with open(query_path, 'w') as f:
       f.write(query_string)
