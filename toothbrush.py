@@ -111,6 +111,7 @@ class Notes:
       if i == self.selected_index:
         full_text = self.basename_to_content[basename].strip()
         lines = full_text.splitlines()
+        lines = lines[:10] + (['...'] if len(lines) > 10 else [])
         indented_lines = ['    ' + line for line in lines]
         content_preview = '\n'.join(indented_lines)
         print content_preview
