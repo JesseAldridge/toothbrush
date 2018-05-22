@@ -22,6 +22,7 @@ class ThreadPrinter:
 
   def print_(self, *a):
     new_line = ' '.join(a)
+    # https://stackoverflow.com/questions/50379652/python-getch-print-from-separate-thread
     print '\b' * len(self.prev_line) + new_line
     self.prev_line = new_line
 
