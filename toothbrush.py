@@ -16,19 +16,30 @@ def getch():
     termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
   return ch
 
+class ThreadPrinter:
+  def __init__(self):
+    self.prev_line = ''
+
+  def print_(self, *a):
+    new_line = ' '.join(a)
+    print '\b' * len(self.prev_line) + new_line
+    self.prev_line = new_line
+
+thread_printer = ThreadPrinter()
+
 def main_loop():
   # Load notes, saved_query, and log loading time.
 
   if not os.path.exists(DIR_PATH_META):
     os.mkdir(DIR_PATH_META)
 
-  notes = Notes()
-
   query_string = ' '.join(sys.argv[1:])
   query_path = os.path.join(DIR_PATH_META, 'saved_query.txt')
   if not query_string.strip() and os.path.exists(query_path):
     with open(query_path) as f:
       query_string = f.read()
+
+  notes = Notes(query_string)
 
   # Wait for a key, build up the query string.
 
@@ -72,12 +83,13 @@ def main_loop():
       f.write(query_string)
 
 class Notes:
-  def __init__(self):
+  def __init__(self, initial_query_string):
     self.dir_path = os.path.expanduser(DIR_PATH_NOTES)
     self.selected_index = None
     self.basename_to_content = {}
     self.basename_to_content_lower = {}
     self.matched_basenames = []
+    self.initial_query_string = initial_query_string
 
     def load_notes():
       glob_path = os.path.join(self.dir_path, '*.txt')
@@ -86,6 +98,8 @@ class Notes:
         with open(path) as f:
           self.basename_to_content[basename] = f.read()
         self.basename_to_content_lower[basename] = self.basename_to_content[basename].lower()
+
+      self.search(self.initial_query_string)
 
     t = threading.Thread(target=load_notes, args=[], kwargs={})
     t.start()
@@ -107,19 +121,19 @@ class Notes:
     num_matches_to_show = 10
 
     for i, basename in enumerate(self.matched_basenames[:num_matches_to_show]):
-      print '{}{}'.format('> ' if i == self.selected_index else '  ', basename)
+      thread_printer.print_('{}{}'.format('> ' if i == self.selected_index else '  ', basename))
       if i == self.selected_index:
         full_text = self.basename_to_content[basename].strip()
         lines = full_text.splitlines()
         lines = lines[:10] + (['...'] if len(lines) > 10 else [])
         indented_lines = ['    ' + line for line in lines]
         content_preview = '\n'.join(indented_lines)
-        print content_preview
+        thread_printer.print_(content_preview)
 
-    if not self.matched_basenames:
-      print '~ nothing found ~'
+    if not self.matched_basenames and self.basename_to_content_lower:
+      thread_printer.print_('~ nothing found ~')
     elif len(self.matched_basenames) > num_matches_to_show:
-      print '  ...'
+      thread_printer.print_('  ...')
 
   def score(self, basename):
     return 10 if self.query_string == basename else 0
@@ -130,8 +144,8 @@ class Notes:
     self.open_path(path)
 
   def open_path(self, path):
-    print 'opening:'
-    print '"{}"'.format(path)
+    thread_printer.print_('opening:')
+    thread_printer.print_('"{}"'.format(path))
     subprocess.call(['open', path])
 
   def new_note(self, query_string):
