@@ -46,8 +46,6 @@ def main_loop():
 
   is_first_key = True
   while True:
-    print '\nquery: [{}]\n'.format(query_string)
-
     notes.search(query_string)
     ch = getch()
 
@@ -106,6 +104,8 @@ class Notes:
     t.start()
 
   def search(self, query_string):
+    thread_printer.print_('\nquery: [{}]\n'.format(query_string))
+
     self.matched_basenames = []
     self.query_string = query_string
 
