@@ -5,6 +5,7 @@ Something like this:
 ```
 git clone git@github.com:JesseAldridge/toothbrush.git
 cd toothbrush
+pip install -r requirements.txt
 ln -s /Users/jesse_aldridge/Dropbox/toothbrush/toothbrush.py /usr/local/bin/t
 ```
 

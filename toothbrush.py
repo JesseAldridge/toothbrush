@@ -1,6 +1,8 @@
 #!/usr/bin/python
 import sys, tty, termios, subprocess, os, json, glob, time, re, threading
 
+import clipboard
+
 DIR_PATH_NOTES = os.path.expanduser("~/Dropbox/tbrush_notes")
 DIR_PATH_META = os.path.expanduser('~/.toothbrush_meta')
 
@@ -58,6 +60,8 @@ def main_loop():
     elif ord(ch) == 23:  # ctrl+w
       stripped = query_string.strip()
       query_string = (stripped.rsplit(' ', 1)[0] + ' ') if ' ' in stripped else ''
+    elif ord(ch) == 24:  # ctrl+x
+      clipboard.copy(query_string)
     elif ord(ch) == 127:  # backspace
       query_string = query_string[:-1]
     elif ord(ch) == 13:  # return
