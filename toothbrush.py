@@ -60,8 +60,6 @@ def main_loop():
     elif ord(ch) == 23:  # ctrl+w
       stripped = query_string.strip()
       query_string = (stripped.rsplit(' ', 1)[0] + ' ') if ' ' in stripped else ''
-    elif ord(ch) == 24:  # ctrl+x
-      clipboard.copy(query_string)
     elif ord(ch) == 127:  # backspace
       query_string = query_string[:-1]
     elif ord(ch) == 13:  # return
@@ -158,6 +156,7 @@ class Notes:
     with open(new_path, 'w') as f:
       f.write('')
     self.open_path(new_path)
+    clipboard.copy(query_string)
 
   def adjust_selection(self, amount):
     if not self.matched_basenames:
