@@ -159,7 +159,7 @@ class Notes:
     with open(new_path, 'w') as f:
       f.write('')
     self.open_path(new_path)
-    clipboard.copy(query_string)
+    clipboard.copy(query_string) # copy query to clipboard for easy googling
 
   def adjust_selection(self, amount):
     if not self.matched_basenames:
