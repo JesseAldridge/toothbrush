@@ -11,8 +11,8 @@ ln -s /Users/jesse_aldridge/Dropbox/toothbrush/toothbrush.py /usr/local/bin/t
 
 Set DIR_PATH at the top of toothbrush.py to the directory that you will use to store your notes.
 
-If you have trouble getting pip set up you can just remove the two lines that reference `clipboard`
-in the main python file and skip the `pip install` step. (It's not very important.)
+If you have trouble getting pip set up you can just remove the two lines that include the string
+"clipboard" in the main python file and skip the `pip install` step. (It's not very important.)
 
 Usage
 ---
