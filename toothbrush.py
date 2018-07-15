@@ -19,19 +19,21 @@ def getch():
   return ch
 
 class ThreadPrinter:
+  # Makes printing from a separate thread work.
+  # https://stackoverflow.com/questions/50379652/python-getch-print-from-separate-thread
+
   def __init__(self):
     self.prev_line = ''
 
   def print_(self, *a):
     new_line = ' '.join(a)
-    # https://stackoverflow.com/questions/50379652/python-getch-print-from-separate-thread
     print '\b' * len(self.prev_line) + new_line
     self.prev_line = new_line
 
 thread_printer = ThreadPrinter()
 
 def main_loop():
-  # Load notes, saved_query, and log loading time.
+  # Load notes and saved_query.
 
   if not os.path.exists(DIR_PATH_META):
     os.mkdir(DIR_PATH_META)
@@ -102,6 +104,7 @@ class Notes:
 
       self.search(self.query_string)
 
+    # load the notes in a separate thread so we can start searching before they are all loaded
     t = threading.Thread(target=load_notes, args=[], kwargs={})
     t.start()
 
