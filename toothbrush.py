@@ -156,8 +156,9 @@ class Notes:
 
   def new_note(self, query_string):
     new_path = os.path.join(DIR_PATH_NOTES, query_string) + '.txt'
-    with open(new_path, 'w') as f:
-      f.write('')
+    if not os.path.exists(new_path):
+      with open(new_path, 'w') as f:
+        f.write('')
     self.open_path(new_path)
     clipboard.copy(query_string) # copy query to clipboard for easy googling
 
