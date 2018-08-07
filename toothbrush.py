@@ -1,8 +1,6 @@
 #!/usr/bin/python
 import sys, tty, termios, subprocess, os, json, glob, time, re, threading
 
-import clipboard
-
 DIR_PATH_NOTES = os.path.expanduser("~/Dropbox/tbrush_notes")
 DIR_PATH_META = os.path.expanduser('~/.toothbrush_meta')
 
@@ -160,7 +158,6 @@ class Notes:
       with open(new_path, 'w') as f:
         f.write('')
     self.open_path(new_path)
-    clipboard.copy(query_string) # copy query to clipboard for easy googling
 
   def adjust_selection(self, amount):
     if not self.matched_basenames:
