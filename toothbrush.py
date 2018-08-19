@@ -16,20 +16,6 @@ def getch():
     termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
   return ch
 
-class ThreadPrinter:
-  # Makes printing from a separate thread work.
-  # https://stackoverflow.com/questions/50379652/python-getch-print-from-separate-thread
-
-  def __init__(self):
-    self.prev_line = ''
-
-  def print_(self, *a):
-    new_line = ' '.join(a)
-    print '\b' * len(self.prev_line) + new_line
-    self.prev_line = new_line
-
-thread_printer = ThreadPrinter()
-
 def main_loop():
   # Load notes and saved_query.
 
@@ -92,22 +78,17 @@ class Notes:
     self.matched_basenames = []
     self.query_string = initial_query_string
 
-    def load_notes():
-      glob_path = os.path.join(self.dir_path, '*.txt')
-      for path in glob.glob(glob_path):
-        basename = os.path.splitext(os.path.basename(path))[0]
-        with open(path) as f:
-          self.basename_to_content[basename] = f.read()
-        self.basename_to_content_lower[basename] = self.basename_to_content[basename].lower()
+    glob_path = os.path.join(self.dir_path, '*.txt')
+    for path in glob.glob(glob_path):
+      basename = os.path.splitext(os.path.basename(path))[0]
+      with open(path) as f:
+        self.basename_to_content[basename] = f.read()
+      self.basename_to_content_lower[basename] = self.basename_to_content[basename].lower()
 
-      self.search(self.query_string)
-
-    # load the notes in a separate thread so we can start searching before they are all loaded
-    t = threading.Thread(target=load_notes, args=[], kwargs={})
-    t.start()
+    self.search(self.query_string)
 
   def search(self, query_string):
-    thread_printer.print_('\nquery: [{}]\n'.format(query_string))
+    print '\nquery: [{}]\n'.format(query_string)
 
     self.matched_basenames = []
     self.query_string = query_string
@@ -125,19 +106,19 @@ class Notes:
     num_matches_to_show = 10
 
     for i, basename in enumerate(self.matched_basenames[:num_matches_to_show]):
-      thread_printer.print_('{}{}'.format('> ' if i == self.selected_index else '  ', basename))
+      print '{}{}'.format('> ' if i == self.selected_index else '  ', basename)
       if i == self.selected_index:
         full_text = self.basename_to_content[basename].strip()
         lines = full_text.splitlines()
         lines = lines[:10] + (['...'] if len(lines) > 10 else [])
         indented_lines = ['    ' + line for line in lines]
         content_preview = '\n'.join(indented_lines)
-        thread_printer.print_(content_preview)
+        print content_preview
 
     if not self.matched_basenames and self.basename_to_content_lower:
-      thread_printer.print_('~ nothing found ~')
+      print '~ nothing found ~'
     elif len(self.matched_basenames) > num_matches_to_show:
-      thread_printer.print_('  ...')
+      print '  ...'
 
   def score(self, basename):
     return 10 if self.query_string == basename else 0
@@ -148,8 +129,8 @@ class Notes:
     self.open_path(path)
 
   def open_path(self, path):
-    thread_printer.print_('opening:')
-    thread_printer.print_('"{}"'.format(path))
+    print 'opening:'
+    print '"{}"'.format(path)
     subprocess.call(['open', path])
 
   def new_note(self, query_string):
