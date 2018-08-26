@@ -85,8 +85,6 @@ class Notes:
         self.basename_to_content[basename] = f.read()
       self.basename_to_content_lower[basename] = self.basename_to_content[basename].lower()
 
-    self.search(self.query_string)
-
   def search(self, query_string):
     print '\nquery: [{}]\n'.format(query_string)
 
