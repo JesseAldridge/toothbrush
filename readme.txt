@@ -30,6 +30,8 @@ the files from the hard-drive can start to get annoying.
 If you want something that works well with a high volume of notes, try:
 https://github.com/JesseAldridge/electric_toothbrush
 
+Or, even better, try the online wiki-style version and share notes with the world:
+https://github.com/JesseAldridge/dentist
 
 License
 ---
