@@ -20,7 +20,9 @@ def main_loop():
   # Load notes and saved_query.
 
   if not os.path.exists(DIR_PATH_META):
-    os.mkdir(DIR_PATH_META)
+    os.makedirs(DIR_PATH_META)
+  if not os.path.exists(DIR_PATH_NOTES):
+    os.makedirs(DIR_PATH_NOTES)
 
   query_string = ' '.join(sys.argv[1:])
   query_path = os.path.join(DIR_PATH_META, 'saved_query.txt')
@@ -37,7 +39,7 @@ def main_loop():
     notes.search(query_string)
     ch = getch()
 
-    # print 'ord(ch):', ord(ch)
+    # print('ord(ch):', ord(ch))
 
     if ord(ch) == 3:  # ctrl+c
       raise KeyboardInterrupt
@@ -86,7 +88,7 @@ class Notes:
       self.basename_to_content_lower[basename] = self.basename_to_content[basename].lower()
 
   def search(self, query_string):
-    print '\nquery: [{}]\n'.format(query_string)
+    print('\nquery: [{}]\n'.format(query_string))
 
     self.matched_basenames = []
     self.query_string = query_string
@@ -104,19 +106,19 @@ class Notes:
     num_matches_to_show = 10
 
     for i, basename in enumerate(self.matched_basenames[:num_matches_to_show]):
-      print '{}{}'.format('> ' if i == self.selected_index else '  ', basename)
+      print('{}{}'.format('> ' if i == self.selected_index else '  ', basename))
       if i == self.selected_index:
         full_text = self.basename_to_content[basename].strip()
         lines = full_text.splitlines()
         lines = lines[:10] + (['...'] if len(lines) > 10 else [])
         indented_lines = ['    ' + line for line in lines]
         content_preview = '\n'.join(indented_lines)
-        print content_preview
+        print(content_preview)
 
     if not self.matched_basenames and self.basename_to_content_lower:
-      print '~ nothing found ~'
+      print('~ nothing found ~')
     elif len(self.matched_basenames) > num_matches_to_show:
-      print '  ...'
+      print('  ...')
 
   def score(self, basename):
     return 10 if self.query_string == basename else 0
@@ -127,8 +129,8 @@ class Notes:
     self.open_path(path)
 
   def open_path(self, path):
-    print 'opening:'
-    print '"{}"'.format(path)
+    print('opening:')
+    print('"{}"'.format(path))
     subprocess.call(['open', path])
 
   def new_note(self, query_string):
