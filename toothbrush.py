@@ -20,6 +20,12 @@ def main_loop():
   # Load notes and saved_query.
 
   if not os.path.exists(DIR_PATH_META):
+    print(
+      "\nWelcome! Toothbrush helps you maintain a directory of txt notes. Just start typing and "
+      "hit return. This will create a new text file. Go ahead and type whatever in there. Save "
+      "and close your editor. Run toothbrush again. Enter the same query. Notice that your saved "
+      "note comes up. Press the down key to select it and hit return to open."
+    )
     os.makedirs(DIR_PATH_META)
   if not os.path.exists(DIR_PATH_NOTES):
     os.makedirs(DIR_PATH_NOTES)
