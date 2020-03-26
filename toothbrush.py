@@ -49,8 +49,6 @@ def main_loop():
 
     if ord(ch) == 3:  # ctrl+c
       raise KeyboardInterrupt
-    elif ord(ch) == 14:  # ctrl+n
-      notes.new_note(query_string)
     elif ord(ch) == 23:  # ctrl+w
       stripped = query_string.strip()
       query_string = (stripped.rsplit(' ', 1)[0] + ' ') if ' ' in stripped else ''
